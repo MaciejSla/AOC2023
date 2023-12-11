@@ -8,12 +8,7 @@ import (
 	"unicode"
 )
 
-func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: Day1 <input file>")
-		os.Exit(1)
-	}
-	input := os.Args[1]
+func Ex1(input string) {
 	file, _ := os.Open(input)
 	scanner := bufio.NewScanner(file)
 	var result int
