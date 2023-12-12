@@ -60,10 +60,8 @@ func Ex1(input string) {
 	for y, line := range lines {
 		for x, char := range line {
 			if strings.ContainsRune(symbols, char) {
-				fmt.Println(x, y, string(char))
 				for i := range numbers {
 					if NumInBetween(y, numbers[i].Y-1, numbers[i].Y+1) && NumInBetween(x, numbers[i].X-1, numbers[i].X+numbers[i].Length) && !numbers[i].Found {
-						fmt.Println(numbers[i].Value)
 						result += numbers[i].Value
 						numbers[i].Found = true
 					}
