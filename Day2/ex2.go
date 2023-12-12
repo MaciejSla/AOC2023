@@ -29,6 +29,7 @@ func countMaxCubesInRound(rounds []string) int {
 
 func Ex2(input string) {
 	file, _ := os.Open(input)
+	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	var result int
 	for scanner.Scan() {
