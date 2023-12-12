@@ -4,30 +4,22 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"unicode"
 )
 
 const symbols = "*/+=@=$#&^%-"
 
-func CheckIfPartNumber(numStart, numEnd, i int, lines []string, linesCount int) bool {
-	for k := numStart; k <= numEnd; k++ {
-		if strings.Contains(symbols, string(lines[i][k])) {
-			return true
-		}
-		if i > 0 {
-			if strings.Contains(symbols, string(lines[i-1][k])) {
-				return true
-			}
-		}
-		if i < linesCount-1 {
-			if strings.Contains(symbols, string(lines[i+1][k])) {
-				return true
-			}
-		}
-	}
-	return false
+type Number struct {
+	Value  int
+	Length int
+	X      int
+	Y      int
+	Found  bool
+}
+
+func NumInBetween(num, min, max int) bool {
+	return num >= min && num <= max
 }
 
 func Ex1(input string) {
@@ -38,46 +30,45 @@ func Ex1(input string) {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	linesCount := len(lines)
-	lineLength := len(lines[0])
-	var numString string
-	var numStart = -1
 	var result int
-	for i := 0; i < linesCount; i++ {
-		for j := 0; j < lineLength; j++ {
-			char := lines[i][j]
-			if unicode.IsNumber(rune(char)) {
-				numString += string(char)
-				if numStart == -1 {
-					if j > 0 {
-						numStart = j - 1
-					} else {
-						numStart = j
-					}
+	var numbers []Number
+	number := Number{Y: -1}
+	// Find all numbers
+	for y, line := range lines {
+		for x, char := range line {
+			if unicode.IsNumber(char) {
+				if number.Y == -1 {
+					number.Y = y
+					number.X = x
 				}
-				if j == lineLength-1 {
-					numEnd := j
-					num, _ := strconv.Atoi(numString)
-					isValid := CheckIfPartNumber(numStart, numEnd, i, lines, linesCount)
-					if isValid {
-						result += num
-					}
-					numStart = -1
-					numString = ""
+				number.Length++
+				number.Value = number.Value*10 + int(char-'0')
+				if x == len(line)-1 {
+					numbers = append(numbers, number)
+					number = Number{Y: -1}
 				}
 			} else {
-				if len(numString) > 0 {
-					numEnd := j
-					num, _ := strconv.Atoi(numString)
-					isValid := CheckIfPartNumber(numStart, numEnd, i, lines, linesCount)
-					if isValid {
-						result += num
-					}
-					numStart = -1
-					numString = ""
+				if number.Length > 0 {
+					numbers = append(numbers, number)
+					number = Number{Y: -1}
 				}
 			}
 		}
 	}
+
+	// Find all symbols
+	for y, line := range lines {
+		for x, char := range line {
+			if strings.ContainsRune(symbols, char) {
+				for _, number := range numbers {
+					if NumInBetween(y, number.Y-1, number.Y+1) && NumInBetween(x, number.X-1, number.X+number.Length) {
+						result += number.Value
+						number.Found = true
+					}
+				}
+			}
+		}
+	}
+
 	fmt.Printf("Result: %d", result)
 }
