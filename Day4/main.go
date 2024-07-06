@@ -13,7 +13,7 @@ Usage: Day3 <ex> <input file>
 	switch ex {
 	case 1:
 		Ex1(input)
-		//case 2:
-		//	Ex2(input)
+	case 2:
+		Ex2(input)
 	}
 }
